@@ -1,15 +1,21 @@
 import logo from './logo.svg';
 import './App.css';
-import Article from './components/Article';
+
+import {Article, Image} from './components/index';
+
+//エントリポイントを使えば一行でimportできる
+// import Article from './components/Article';
+// import Image from './components/LogoImage';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        
+        <Image
+          img={logo}
+          src={'src/App.js'}
+        />
 
         <Article
           title={'React入門'}
