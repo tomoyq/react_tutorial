@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 
-import {Article, Image} from './components/index';
+import {Article, Image, Counter, Toggle} from './components/index';
 
 //エントリポイントを使えば一行でimportできる
 // import Article from './components/Article';
@@ -12,24 +12,28 @@ function App() {
     <div className="App">
       <header className="App-header">
         
-        <Image
+        <Counter />
+
+        <Toggle />
+
+        {/* <Image
           img={logo}
           src={'src/App.js'}
-        />
+        /> */}
 
         <Article
           title={'React入門'}
           content={'初めてcomponentをつくりました。'}
         />
 
-        <a
+        {/* <a
           className="App-link"
           href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
         >
           Learn React
-        </a>
+        </a> */}
       </header>
     </div>
   );

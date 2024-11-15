@@ -7,11 +7,13 @@ const Article = (props) => {
     //state更新関数はクリックイベントなどに直接渡すのではなく、関数化して渡す
     const publishedArticle = () => {
         //ボタンを押すとtrueとfalseが交互に描画される(もっと上手い書き方があるはず)
-        if (isPublished === true){
-            setIsPublished(false);
-        }else{
-            setIsPublished(true);
-        };
+        // if (isPublished === true){
+        //     setIsPublished(false);
+        // }else{
+        //     setIsPublished(true);
+        // };
+
+        setIsPublished(prevState => !prevState)
     };
 
     return (
