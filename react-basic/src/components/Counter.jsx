@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Counter = () => {
     const [count, setCount] = useState(0);
@@ -13,6 +13,11 @@ const Counter = () => {
     const countDown = () => {
         setCount(prevState => prevState - 1);
     };
+
+    //uasEffectは再レンダリングされるたびに実行される
+    useEffect(() => {
+        console.log('現在のカウント数:', count);
+    });
 
     return (
         <div>
