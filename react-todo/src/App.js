@@ -1,14 +1,19 @@
+import { useState } from 'react';
+
 import logo from './logo.svg';
 import './App.css';
-import { TodoForm } from './components';
+import { TodoForm, TodoList } from './components';
 
 import Container from '@mui/material/Container'
 
 
 function App() {
+  const [items, setItems] = useState([]);
+
   return (
     <Container fixed>
-      <TodoForm/>
+      <TodoForm setItems={setItems}/>
+      <TodoList />
     </Container>
   );
 }
