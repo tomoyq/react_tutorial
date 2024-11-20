@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const TodoForm = ({items, setItems}) => {
+const TodoForm = ({addItems}) => {
     const [todo, setTodo] = useState({title: '', content: '', date: ''});
 
     const changeTitle = (e) => {
@@ -20,7 +20,7 @@ const TodoForm = ({items, setItems}) => {
         event.preventDefault();        
 
         //itemsにtodoを追加する
-        setItems([...items, todo]);
+        addItems(todo);
 
         //stateを使って入力内容をクリアする
         setTodo({title: '', content: '', date: ''});

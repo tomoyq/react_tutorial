@@ -1,7 +1,7 @@
-const TodoList = (props) => {
+const TodoList = ({props}) => {
     return (
         <li>
-            <span className="todo-title">title - </span>content,日付：
+            <span className="todo-title">{props.title} - </span>{props.content} , 日付：{props.date}
         </li>
     );
 };
