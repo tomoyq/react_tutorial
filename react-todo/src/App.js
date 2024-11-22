@@ -10,8 +10,12 @@ function App() {
   const [items, setItems] = useState([]);
 
   //stateを更新する関数を定義
-  const addItems = (todo) => {
+  const addItems = todo => {
     setItems((prevState) => [...prevState, {id: items.length + 1, todoContent: todo}]);
+  };
+
+  const deleteItems = id => {
+    setItems(items => items.filter(item => item.id !== id));   
   };
 
   return (
@@ -26,7 +30,7 @@ function App() {
 
       <ul>
         {items.map((item) => (
-          <TodoList key={item.id} props={item.todoContent} />
+          <TodoList key={item.id} id={item.id} props={item.todoContent} func={deleteItems} />
         ))}
       </ul>
       
