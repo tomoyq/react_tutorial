@@ -1,10 +1,11 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import './assets/styles/style.css';
 import defaultDataset  from './dataset';
+import { AnswersList, Chats } from './components/index';
 
 function App() {
   //回答コンポーネントに渡すデータ
-  const [ansers, setAnsers] = useState([]);
+  const [answers, setAnswers] = useState([]);
 
   //チャットコンポーネントに渡すデータ
   const [chats, setChats] = useState([]);
@@ -17,11 +18,40 @@ function App() {
 
   //問い合わせフォーム用モーダルの開閉を管理
   const [open, setOpen] = useState(false);
+
+  //回答の初期化
+  const initAnswer = () => {
+    //datasetからinitのvalueを取得
+    const initDataset = dataset[currentId];
+    //valueの中から回答を取得
+    const initAnswers = initDataset.answers;
+    setAnswers(initAnswers);
+  };
+
+  //チャットの初期化
+  const initChat = () => {
+    //datasetからinitのvalueを取得
+    const initDataset = dataset[currentId];
+    //本文とタイプというプロパティをもつ連想配列を作成
+    const newChat = {
+      text: initDataset.question,
+      type: 'question'
+    };
+    //今までのチャットステートに追加する
+    setChats([...chats, newChat]);
+  };
+
+
+  useEffect(() => {
+    initChat();
+    initAnswer();
+  }, []);
  
   return (
     <section className='c-section'>
       <div className='c-box'>
-        {currentId}
+        <Chats chats={chats}/>
+        <AnswersList answers={answers}/>
       </div>
     </section>
   );
