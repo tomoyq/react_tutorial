@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, createElement} from 'react';
 import './assets/styles/style.css';
 import defaultDataset  from './dataset';
 import { AnswersList, Chats } from './components/index';
@@ -39,7 +39,15 @@ function App() {
     switch(true) {
       case (nextQuestionId === 'init'):
         //最初の質問も表示させる
-        displayNextQuestion(nextQuestionId);
+        setTimeout(() => displayNextQuestion(nextQuestionId), 500);
+        break;
+
+      case(/^https:*/.test(nextQuestionId)):
+        const a = document.createElement('a');
+        a.href = nextQuestionId;
+        //aタグの遷移先を別タブで開く
+        a.target = '_blank';
+        a.click();
         break;
 
       default:
@@ -51,7 +59,7 @@ function App() {
         //今までのチャットステートに追加する
         setChats(prevState => [...prevState, answer]);
 
-        displayNextQuestion(nextQuestionId);
+        setTimeout(() => displayNextQuestion(nextQuestionId), 1000);
         break;
     };
   };
@@ -63,11 +71,19 @@ function App() {
 
     return () => {
       setChats(
-        chats.filter((index) => (index !== 1))
+        chats.filter((index) => (index === 0))
       );
     };
 
   }, []);
+
+  //chatsが増えると自動スクロールされる
+  useEffect(() => {
+    const scrollArea = document.getElementById('scroll-area');
+    if (scrollArea) {
+      scrollArea.scrollTop = scrollArea.scrollHeight; 
+    };
+  }, [chats]);
  
   return (
     <section className='c-section'>
