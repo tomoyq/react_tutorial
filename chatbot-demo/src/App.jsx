@@ -2,6 +2,7 @@ import {useState, useEffect, createElement} from 'react';
 import './assets/styles/style.css';
 import defaultDataset  from './dataset';
 import { AnswersList, Chats } from './components/index';
+import FormDialog from './components/Forms/FormDialog';
 
 function App() {
   //回答コンポーネントに渡すデータ
@@ -42,12 +43,16 @@ function App() {
         setTimeout(() => displayNextQuestion(nextQuestionId), 500);
         break;
 
-      case(/^https:*/.test(nextQuestionId)):
+      case (/^https:*/.test(nextQuestionId)):
         const a = document.createElement('a');
         a.href = nextQuestionId;
         //aタグの遷移先を別タブで開く
         a.target = '_blank';
         a.click();
+        break;
+
+      case (nextQuestionId === 'contact'):
+        handleClickOpen();
         break;
 
       default:
@@ -62,6 +67,16 @@ function App() {
         setTimeout(() => displayNextQuestion(nextQuestionId), 1000);
         break;
     };
+  };
+
+  //modalを開く
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  //modalを閉じる
+  const handleClose = () => {
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -90,6 +105,7 @@ function App() {
       <div className='c-box'>
         <Chats chats={chats}/>
         <AnswersList answers={answers} select={selectAnswer}/>
+        <FormDialog open={open} close={handleClose}/>
       </div>
     </section>
   );
