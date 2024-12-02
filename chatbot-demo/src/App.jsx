@@ -3,6 +3,7 @@ import './assets/styles/style.css';
 import defaultDataset  from './dataset';
 import { AnswersList, Chats } from './components/index';
 import FormDialog from './components/Forms/FormDialog';
+import { db } from './firebase';
 
 function App() {
   //回答コンポーネントに渡すデータ
@@ -79,17 +80,34 @@ function App() {
     setOpen(false);
   };
 
+  const initDataset = dataset => {
+    setDataset(dataset);
+  }
+
   useEffect(() => {
-    //最初のロードが終わると何も回答していない状態で最初の質問が表示される
-    const initAnswer = '';
-    selectAnswer(initAnswer, currentId);
+    (async() => {
+      const dataset = dataset;
 
-    return () => {
-      setChats(
-        chats.filter((index) => (index === 0))
-      );
-    };
+      await db.collection('questions').get().then(snapshots => {
+        snapshots.forEach(doc => {
+          const id = doc.id;
+          const data = doc.data();
+          dataset[id] = data;
+        })
+      })
 
+      initDataset(dataset);
+
+      //最初のロードが終わると何も回答していない状態で最初の質問が表示される
+      const initAnswer = '';
+      selectAnswer(initAnswer, currentId);
+
+      return () => {
+        setChats(
+          chats.filter((index) => (index === 0))
+        );
+      };
+    })();
   }, []);
 
   //chatsが増えると自動スクロールされる
