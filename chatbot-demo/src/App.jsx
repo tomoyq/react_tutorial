@@ -1,11 +1,11 @@
-import {useState, useEffect, createElement} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import './assets/styles/style.css';
-import defaultDataset  from './dataset';
 import { AnswersList, Chats } from './components/index';
 import FormDialog from './components/Forms/FormDialog';
-import { db } from './firebase';
+import {db} from './firebase/index';
+import { collection, getDocs, query } from 'firebase/firestore';
 
-function App() {
+const App = () => {
   //回答コンポーネントに渡すデータ
   const [answers, setAnswers] = useState([]);
 
@@ -16,34 +16,28 @@ function App() {
   const [currentId, setCurrentId] = useState('init');
 
   //質問と回答のデータセット
-  const [dataset, setDataset] = useState(defaultDataset);
+  const [dataset, setDataset] = useState({});
 
   //問い合わせフォーム用モーダルの開閉を管理
   const [open, setOpen] = useState(false);
 
   //選んだ選択肢に紐づいている次の質問を表示させる
-  const displayNextQuestion = (nextQuestionId) => {
+  const displayNextQuestion = (nextQuestionId, nextDataset) => {
     //次の質問文をdatasetからとってくる
-    const nextChats = {
-      text: dataset[nextQuestionId].question,
+    addChats({
+      text: nextDataset.question,
       type: 'question'
-    };
-    //今までのチャットステートに追加する
-    setChats(prevState => [...prevState, nextChats]);
+    });
+
     //currentIdを変更
     setCurrentId(nextQuestionId);
     //次の質問の回答に更新
-    setAnswers(dataset[nextQuestionId].answers);
+    setAnswers(nextDataset.answers);
   };
 
   //選択肢を選んだら実行
   const selectAnswer = (selectedAnswer, nextQuestionId) => {
     switch(true) {
-      case (nextQuestionId === 'init'):
-        //最初の質問も表示させる
-        setTimeout(() => displayNextQuestion(nextQuestionId), 500);
-        break;
-
       case (/^https:*/.test(nextQuestionId)):
         const a = document.createElement('a');
         a.href = nextQuestionId;
@@ -58,17 +52,21 @@ function App() {
 
       default:
         //選択した文をanswerタイプで保持
-        const answer = {
+        addChats({
           text: selectedAnswer,
           type: 'answer'
-        };
-        //今までのチャットステートに追加する
-        setChats(prevState => [...prevState, answer]);
+        });
 
-        setTimeout(() => displayNextQuestion(nextQuestionId), 1000);
+        setTimeout(() => displayNextQuestion(nextQuestionId, dataset[nextQuestionId]), 1000);
         break;
     };
   };
+
+  const addChats = (chat) => {
+    setChats(prevChats => {
+      return [...prevChats, chat]
+    })
+  }
 
   //modalを開く
   const handleClickOpen = () => {
@@ -76,37 +74,24 @@ function App() {
   };
 
   //modalを閉じる
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpen(false);
-  };
-
-  const initDataset = dataset => {
-    setDataset(dataset);
-  }
+  }, [setOpen]);
 
   useEffect(() => {
     (async() => {
-      const dataset = dataset;
+      const initDataset = dataset;
 
-      await db.collection('questions').get().then(snapshots => {
+      await getDocs(query(collection(db, 'questions'))).then(snapshots => {
         snapshots.forEach(doc => {
           const id = doc.id;
           const data = doc.data();
-          dataset[id] = data;
+          initDataset[id] = data;
         })
       })
 
-      initDataset(dataset);
-
-      //最初のロードが終わると何も回答していない状態で最初の質問が表示される
-      const initAnswer = '';
-      selectAnswer(initAnswer, currentId);
-
-      return () => {
-        setChats(
-          chats.filter((index) => (index === 0))
-        );
-      };
+      setDataset(initDataset);
+      displayNextQuestion(currentId, initDataset[currentId]);
     })();
   }, []);
 
@@ -116,7 +101,7 @@ function App() {
     if (scrollArea) {
       scrollArea.scrollTop = scrollArea.scrollHeight; 
     };
-  }, [chats]);
+  });
  
   return (
     <section className='c-section'>

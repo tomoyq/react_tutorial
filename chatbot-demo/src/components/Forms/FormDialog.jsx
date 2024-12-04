@@ -4,27 +4,27 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextInput from './TextInput';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const FormDialog = (props) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [description, setDescription] = useState('');
 
-    const inputName = (event) => {
+    const inputName = useCallback((event) => {
         setName(event.target.value);
-    };
+    }, [setName]);
 
-    const inputEmail = (event) => {
+    const inputEmail = useCallback((event) => {
         setEmail(event.target.value);
-    };
+    }, [setEmail]);
 
-    const inputDescription = (event) => {
+    const inputDescription = useCallback((event) => {
         setDescription(event.target.value);
-    };
+    }, [setDescription]);
 
     //formを送信する
-    const submitForm = () => {
+    const submitForm = useCallback(() => {
         const payload = {
             text: 'お問い合わせがありました\n' +
                   'お名前:' + name + '\n' +
@@ -45,7 +45,7 @@ const FormDialog = (props) => {
 
             return props.close()
         })
-    };
+    }, [setName]);
 
     return(
         <Dialog
